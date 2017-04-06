@@ -6,7 +6,7 @@
     RewriteEngine On
 
     RewriteCond %{SERVER_PORT} 80 
-    RewriteRule ^(.*)$ https://www.example.com/$1 [R,L]
+    RewriteRule ^(.*)$ https://www.m-gh.info/$1 [R,L]
     
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
