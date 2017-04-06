@@ -11,6 +11,7 @@ class AmozeshBot extends Controller
     {
     	ini_set('error_reporting', E_ALL);
 		define('API_KEY','313661129:AAGVxrwy2DDw7OQjzJI6AftzD-8SO2Cyhvo');
+		include(app_path() . '\public\jdf\jdf.php');
 
 		function makeHTTPRequest($method,$datas=[])
 		{
