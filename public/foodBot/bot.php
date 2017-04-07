@@ -1,13 +1,95 @@
 <?php
 
+include('db.php');
+include('../jdf/jdf.php');
+
 
 date_default_timezone_set('Asia/Tehran');
-$timestamp = time();
+$now = new DateTime();
+$timestamp = $now->getTimestamp();
+
 $dw = date( "w", $timestamp);
 
 
-include('db.php');
-include('../jdf/jdf.php');
+$termStart=jalali_to_gregorian(1395,11,16);
+
+$today = jdate('l j F');
+
+
+$startDate = new DateTime("$termStart[0]-$termStart[1]-$termStart[2]");
+$endDate = new DateTime($now->format('Y-m-d'));
+
+$interval = $startDate->diff($endDate);
+
+function numberToWord(int $number)
+{
+    switch ($number) 
+    {
+        case '1':
+            return 'اول';
+        break;
+        case '2':
+            return 'دوم';
+        break;
+        case '3':
+            return 'سوم';
+        break;
+        case '4':
+            return 'چهارم';
+        break;
+        case '5':
+            return 'پنجم';
+        break;
+        case '6':
+            return 'ششم';
+        break;
+        case '7':
+            return 'هفتم';
+        break;
+        case '8':
+            return 'هشتم';
+        break;
+        case '9':
+            return 'نهم';
+        break;
+        case '10':
+            return 'دهم';
+        break;
+        case '11':
+            return 'یازدهم';
+        break;
+        case '12':
+            return 'دوازدهم';
+        break;
+        case '13':
+            return 'سیزدهم';
+        break;
+        case '14':
+            return 'چهاردهم';
+        break;
+        case '15':
+            return 'پانزدهم';
+        break;
+        case '16':
+            return 'شانزدهم';
+        break;
+        case '17':
+            return 'هفدهم';
+        break;
+        case '18':
+            return 'هجدهم';
+        break;
+        default:
+            return 'نامشخص';
+        break;
+    }
+}
+
+$educationalWeek=numberToWord((int)(($interval->days) / 7));
+
+
+//
+
 
 ini_set('error_reporting', E_ALL);
 define('API_KEY','281762005:AAEkdKBSnDsCT46xWID4q-jy7p_uRvcKnYI');
@@ -32,7 +114,7 @@ function makeHTTPRequest($method,$datas=[])
 // Fetching UPDATE
 $update = json_decode(file_get_contents('php://input'));
 
-$today = jdate('l j F');
+
 
 if(isset($update->callback_query))
 {  
@@ -61,7 +143,7 @@ if(isset($update->callback_query))
                 makeHTTPRequest('editMessageText',[
                     'chat_id'=>$chat_id,
                     'message_id'=>$message_id,
-                    'text'=>"امروز: ".$today,
+                    'text'=>"امروز ".$today."-هفته ".$educationalWeek." آموزشی",
                     'reply_markup'=>json_encode([
                         'inline_keyboard'=>[
                             [
@@ -239,7 +321,7 @@ if(isset($update->callback_query))
 
     makeHTTPRequest('sendMessage',[
         'chat_id'=>$update->message->chat->id,
-        'text'=>"امروز: ".$today,
+        'text'=>"امروز ".$today."-هفته ".$educationalWeek." آموزشی",
         'reply_markup'=>json_encode([
             'inline_keyboard'=>[
                 [
