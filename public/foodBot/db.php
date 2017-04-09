@@ -2,7 +2,7 @@
 header('Content-Type: text/html; charset=utf-8');
 $host="localhost";
 $username="mghinfo_root";
-$password="jJoiTnM3y";
+$password="ER(a<sTQ6LbA(M-M";
 $dbname = "mghinfo_blog";
 
 $conn = new mysqli($host, $username, $password,$dbname);

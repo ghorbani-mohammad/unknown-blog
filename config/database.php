@@ -45,7 +45,7 @@ return [
             'port' => env('DB_PORT', '3306'),
             'database' => 'mghinfo_blog',
             'username' => 'mghinfo_root',
-            'password' => 'PGLz7M&A}9}%HKnm',
+            'password' => 'ER(a<sTQ6LbA(M-M',
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
