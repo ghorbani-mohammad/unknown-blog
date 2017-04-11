@@ -143,7 +143,7 @@ if(isset($update->callback_query))
                 makeHTTPRequest('editMessageText',[
                     'chat_id'=>$chat_id,
                     'message_id'=>$message_id,
-                    'text'=>"امروز ".$today."-هفته ".$educationalWeek." آموزشی",
+                    'text'=>"امروز ".$today."-هفته ".$educationalWeek,
                     'reply_markup'=>json_encode([
                         'inline_keyboard'=>[
                             [
@@ -321,7 +321,7 @@ if(isset($update->callback_query))
 
     makeHTTPRequest('sendMessage',[
         'chat_id'=>$update->message->chat->id,
-        'text'=>"امروز ".$today."-هفته ".$educationalWeek." آموزشی",
+        'text'=>"امروز ".$today."-هفته ".$educationalWeek,
         'reply_markup'=>json_encode([
             'inline_keyboard'=>[
                 [

@@ -11,7 +11,7 @@ class VerifyCsrfToken extends BaseVerifier
      *
      * @var array
      */
-    protected $except = [ '/amozeshbot/bot.php'
+    protected $except = [ '/amozeshbot/bot.php','jeton/bot.php'
         //
     ];
 }

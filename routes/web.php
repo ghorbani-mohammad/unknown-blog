@@ -84,3 +84,8 @@ Route::get('fupdate',function(){
 Route::get('fall',function(){
 	return App\Food::all();
 });
+
+
+
+Route::post('jeton/bot.php','jeton@control');
+
