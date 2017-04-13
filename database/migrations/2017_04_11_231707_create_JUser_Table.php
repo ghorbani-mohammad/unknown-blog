@@ -16,8 +16,7 @@ class CreateJUserTable extends Migration
         //
         Schema::create('Juser', function (Blueprint $table) 
         {
-            $table->increments('id');
-            $table->string('user_id')->index();
+            $table->integer('user_id')->index();
             $table->string('fname');
             $table->string('lname');
             $table->string('username');

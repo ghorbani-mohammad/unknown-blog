@@ -15,8 +15,7 @@ class CreateJUserStateTable extends Migration
     {
         Schema::create('JUserState', function (Blueprint $table) 
         {
-            $table->increments('id');
-            $table->string('user_id')->index();
+            $table->integer('user_id')->index();
             $table->string('state')->nullable();
         });
     }

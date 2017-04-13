@@ -15,23 +15,23 @@ class jeton extends Controller
 		define('API_KEY','368144050:AAGpp3CY_ZHDaPqdZKPEU3_PSnp9lUn11BQ');
 
 		include(app_path() . '/Myclasses/Jalali.php');
-        $today= jdate('l j F'); 
+		$today= jdate('l j F'); 
 
 		function makeHTTPRequest($method,$datas=[])
 		{
-		    $url = "https://api.telegram.org/bot".API_KEY."/".$method;
-		    $ch = curl_init();
-		    curl_setopt($ch,CURLOPT_URL,$url);
-		    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-		    curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($datas));
-		    $res = curl_exec($ch);
-		    if(curl_error($ch))
-		    {
-		        var_dump(curl_error($ch));
-		    }else
-		    {
-		        return json_decode($res);
-		    }
+			$url = "https://api.telegram.org/bot".API_KEY."/".$method;
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+			curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($datas));
+			$res = curl_exec($ch);
+			if(curl_error($ch))
+			{
+				var_dump(curl_error($ch));
+			}else
+			{
+				return json_decode($res);
+			}
 		}
 
 		$update = json_decode(file_get_contents('php://input'));
@@ -42,104 +42,110 @@ class jeton extends Controller
 
 			$item=$update->callback_query->data;
 			$chatId = $update->callback_query->message->chat->id;
+			$user_id = $update->callback_query->from->id;
 			
-	        $messageId = $update->callback_query->message->message_id;
-	        $callbackQueryId=$update->callback_query->id;
-	        makeHTTPRequest('answerCallbackQuery',['callback_query_id'=>$callbackQueryId]);
+			$messageId = $update->callback_query->message->message_id;
+			$callbackQueryId=$update->callback_query->id;
+			makeHTTPRequest('answerCallbackQuery',['callback_query_id'=>$callbackQueryId]);
 
-	        switch ($item) {
-	        	case '1':
-	        		\Log::info("switch 1");
-	        		makeHTTPRequest('editMessageText',[
-				        'chat_id'=>$chatId,
-				        'message_id'=>$messageId,
-				        'text'=>"امروز: ".$today,
-				        'reply_markup'=>json_encode([
-				            'inline_keyboard'=>[
-				                [
-				                    ['text'=>"برنامه غذایی",'callback_data'=>'2']
-				                ],
-				                [
-				                	['text'=>"ژتون من",'callback_data'=>'2']
-				                ],
-				                [
-				                    ['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
-				                ]
-				            ]
-				        ])
-				    ]);
-	        	break;
-	        	
-	        	case '2':
-		        	\Log::info("switch 2");
-	        		makeHTTPRequest('editMessageText',[
-				        'chat_id'=>$chatId,
-				        'message_id'=>$messageId,
-				        'text'=>"اعتبار شما: ".$today,
-				        'reply_markup'=>json_encode([
-				            'inline_keyboard'=>[
-				                [
-				                    ['text'=>"غذای امروز",'callback_data'=>'2']
-				                ],
-				                [
-				                	['text'=>"اطلاعات کارت",'callback_data'=>'3']
-				                ],
-				                [
-				                    ['text'=>"بازگشت",'callback_data'=>'1']
-				                ]
-				            ]
-				        ])
-				    ]);
-        		break;
-        		case '3':
-		        	\Log::info("switch 3");
-	        		makeHTTPRequest('editMessageText',[
-				        'chat_id'=>$chatId,
-				        'message_id'=>$messageId,
-				        'text'=>"اعتبار شما: ".$today,
-				        'reply_markup'=>json_encode([
-				            'inline_keyboard'=>[
-				                [
-				                    ['text'=>"نام کاربری",'callback_data'=>'4']
-				                ],
-				                [
-				                	['text'=>"رمز عبور",'callback_data'=>'5']
-				                ],
-				                [
-				                    ['text'=>"بازگشت",'callback_data'=>'2']
-				                ]
-				            ]
-				        ])
-				    ]);
-        		break;
-        		case '4':
-		        	\Log::info("switch 4");
-		        	$user_id = $update->callback_query->from->id;
-		        	$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'id']);
+			switch ($item) {
+				case '1':
+				\Log::info("switch 1");
+				makeHTTPRequest('editMessageText',[
+					'chat_id'=>$chatId,
+					'message_id'=>$messageId,
+					'text'=>"امروز: ".$today,
+					'reply_markup'=>json_encode([
+						'inline_keyboard'=>[
+						[
+						['text'=>"برنامه غذایی",'callback_data'=>'2']
+						],
+						[
+						['text'=>"ژتون من",'callback_data'=>'2']
+						],
+						[
+						['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
+						]
+						]
+						])
+					]);
+				break;
+
+				case '2':
+				\Log::info("switch 2");
+				makeHTTPRequest('editMessageText',[
+					'chat_id'=>$chatId,
+					'message_id'=>$messageId,
+					'text'=>"اعتبار شما: ".$today,
+					'reply_markup'=>json_encode([
+						'inline_keyboard'=>[
+						[
+						['text'=>"موجودی من",'callback_data'=>'2']
+						],
+						[
+						['text'=>"اطلاعات کارت",'callback_data'=>'3']
+						],
+						[
+						['text'=>"بازگشت",'callback_data'=>'1']
+						]
+						]
+						])
+					]);
+				break;
+				case '3':
+				\Log::info("switch 3");
+				$user=Juser::find($user_id);
+				$jusername=$user->jusername;
+				$jpassword=$user->jpassword;
+				$jusername=(!is_null($jusername)?"ثبت شده است ✅":"ثبت نشده است ❌");
+				$jpassword=(!is_null($jpassword)?"ثبت شده است ✅":"ثبت نشده است ❌");
+				makeHTTPRequest('editMessageText',[
+					'chat_id'=>$chatId,
+					'message_id'=>$messageId,
+					'text'=>"نام کاربری: ".$jusername."\nرمز عبور: ".$jpassword,
+					'reply_markup'=>json_encode([
+						'inline_keyboard'=>[
+						[
+						['text'=>"نام کاربری",'callback_data'=>'4']
+						],
+						[
+						['text'=>"رمز عبور",'callback_data'=>'5']
+						],
+						[
+						['text'=>"بازگشت",'callback_data'=>'2']
+						]
+						]
+						])
+					]);
+				break;
+				case '4':
+				\Log::info("switch 4");
+				$user_id = $update->callback_query->from->id;
+				$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'id']);
 		        	// $state->state="id";
 		        	// $state->save();
-	        		makeHTTPRequest('sendMessage',[
-				        'chat_id'=>$chatId,
-				        'text'=>"لطفا نام کاربری خود را ارسال کنید",
-				    ]);
-        		break;
-        		case '5':
-		        	\Log::info("switch 5");
-	        		$user_id = $update->callback_query->from->id;
-		        	$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'pa']);
+				makeHTTPRequest('sendMessage',[
+					'chat_id'=>$chatId,
+					'text'=>"لطفا نام کاربری خود را ارسال کنید",
+					]);
+				break;
+				case '5':
+				\Log::info("switch 5");
+				$user_id = $update->callback_query->from->id;
+				$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'pa']);
 		        	// $state->state="pa";
 		        	// $state->save();
-	        		makeHTTPRequest('sendMessage',[
-				        'chat_id'=>$chatId,
-				        'text'=>"لطفا رمز عبور خود را ارسال کنید",
-				    ]);
-        		break;
-	        }
+				makeHTTPRequest('sendMessage',[
+					'chat_id'=>$chatId,
+					'text'=>"لطفا رمز عبور خود را ارسال کنید",
+					]);
+				break;
+			}
 
 		}else
 		{
 
-			\Log::info("not call_back");
+			\Log::info("no call_back data");
 			$chatId = $update->message->chat->id;
 			$messageText=$update->message->text;
 
@@ -151,44 +157,138 @@ class jeton extends Controller
 
 			if($messageText=="/start")
 			{
+				\Log::info("text message:start command");
 				Juser::firstOrCreate([
 					'user_id' => $user_id,
 					'fname'=>$fname,
 					'lname'=>$lname,
 					'username'=>$username,
 					]);
+				JUserState::destroy($user_id);
+				makeHTTPRequest('sendMessage',[
+					'chat_id'=>$chatId,
+					'text'=>"امروز: ".$today,
+					'reply_markup'=>json_encode([
+						'inline_keyboard'=>[
+						[
+						['text'=>"برنامه غذایی",'callback_data'=>'1']
+						],
+						[
+						['text'=>"ژتون من",'callback_data'=>'2']
+						],
+						[
+						['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
+						]
+						]
+						])
+					]);
+			}else
+			{
+				\Log::info("text message:no command");
+				if(JUserState::where('user_id',$user_id)->count()!=0)
+				{
+					\Log::info("we have state for this user");
+					if(is_numeric($messageText))
+					{
+						$state = JUserState::find($user_id)->state;
+						\Log::info("state: ".$state);
+						if($state=='id')
+						{
+							if(strlen($messageText)>10)
+							{
+								\Log::info("id grater than 10");
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"نام کاربری باید کمتر از 11 کاراکتر باشد. مجددا تلاش کنید",
+								]);
+							}
+							elseif(strlen($messageText)<5)
+							{
+								\Log::info("id less than 5");
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"نام کاربری شما باید حداقل 5 کاراکتر باشد",
+								]);
+							}
+							else
+							{
+								$user=Juser::where('user_id',$user_id)->update(['jusername'=>$messageText]);
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"نام کاربری شما ثبت شد",
+									'reply_markup'=>json_encode([
+										'inline_keyboard'=>[
+										[
+										['text'=>"بازگشت",'callback_data'=>'3']
+										],
+										]
+										])
+								]);
+							}
+						}
+						elseif ($state=='pa')
+						{
+							if(strlen($messageText)>25)
+							{
+								\Log::info("pass grater than 25");
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"رمز عبور شما طولانی است. لطفا آن را تغییر دهید و سپس مجددا تلاش کنید",
+									]);
+							}
+							elseif(strlen($messageText)<2)
+							{
+								\Log::info("pass less than 2");
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"رمز عبور شما کوتاه است",
+								]);
+							}
+							else
+							{
+								$user=Juser::where('user_id',$user_id)->update(['jpassword'=>$messageText]);
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"رمز عبور شما ثبت شد",
+									'reply_markup'=>json_encode([
+										'inline_keyboard'=>[
+										[
+										['text'=>"بازگشت",'callback_data'=>'3']
+										],
+										]
+										])
+									]);
+							}
+						}
+					}else
+					{
+						makeHTTPRequest('sendMessage',[
+							'chat_id'=>$chatId,
+							'text'=>"نام کاربری یا کلمه عبور فقط می تواند عدد باشد. مجددا تلاش کنید",
+							]);
+					}
+				}else
+				{
+					\Log::info("we don't have state for this user");
+					makeHTTPRequest('sendMessage',[
+						'chat_id'=>$chatId,
+						'text'=>"امروز: ".$today,
+						'reply_markup'=>json_encode([
+							'inline_keyboard'=>[
+							[
+							['text'=>"برنامه غذایی",'callback_data'=>'1']
+							],
+							[
+							['text'=>"ژتون من",'callback_data'=>'2']
+							],
+							[
+							['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
+							]
+							]
+							])
+						]);
+				}
 			}
-
-			// if($messageText=="/setUsername")
-			// {
-			// 	$juser=	Juser::find($user_id);
-			// 	$juser->jusername=$messageText;
-			// 	$juser->save();
-			// }
-			// if($messageText=="/setPassword")
-			// {
-			// 	$juser=	Juser::find($user_id);
-			// 	$juser->jpassword=$messageText;
-			// 	$juser->save();
-			// }
-
-			makeHTTPRequest('sendMessage',[
-		        'chat_id'=>$chatId,
-		        'text'=>"امروز: ".$today,
-		        'reply_markup'=>json_encode([
-		            'inline_keyboard'=>[
-		                [
-		                    ['text'=>"برنامه غذایی",'callback_data'=>'1']
-		                ],
-		                [
-		                	['text'=>"ژتون من",'callback_data'=>'2']
-		                ],
-		                [
-		                    ['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
-		                ]
-		            ]
-		        ])
-		    ]);
 		}
 	}
 
