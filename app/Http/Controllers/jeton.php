@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Juser;
-use App\JUserState; 
+use App\Juserstate; 
 
 class jeton extends Controller
 {
@@ -57,7 +57,7 @@ class jeton extends Controller
 				        'reply_markup'=>json_encode([
 				            'inline_keyboard'=>[
 				                [
-				                    ['text'=>"غذای امروز",'callback_data'=>'2']
+				                    ['text'=>"برنامه غذایی",'callback_data'=>'2']
 				                ],
 				                [
 				                	['text'=>"ژتون من",'callback_data'=>'2']
@@ -115,32 +115,23 @@ class jeton extends Controller
         		case '4':
 		        	\Log::info("switch 4");
 		        	$user_id = $update->callback_query->from->id;
-		        	JUserState::create('user_id' => $user_id,
-									   'state'=>$'id');
+		        	$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'id']);
+		        	// $state->state="id";
+		        	// $state->save();
 	        		makeHTTPRequest('sendMessage',[
 				        'chat_id'=>$chatId,
-				        'text'=>"لطفا نام کاربر خود را ارسال کنید",
+				        'text'=>"لطفا نام کاربری خود را ارسال کنید",
 				    ]);
         		break;
         		case '5':
 		        	\Log::info("switch 5");
-	        		makeHTTPRequest('editMessageText',[
+	        		$user_id = $update->callback_query->from->id;
+		        	$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'pa']);
+		        	// $state->state="pa";
+		        	// $state->save();
+	        		makeHTTPRequest('sendMessage',[
 				        'chat_id'=>$chatId,
-				        'message_id'=>$messageId,
-				        'text'=>"اعتبار شما: ".$today,
-				        'reply_markup'=>json_encode([
-				            'inline_keyboard'=>[
-				                [
-				                    ['text'=>"نام کاربری",'callback_data'=>'4']
-				                ],
-				                [
-				                	['text'=>"رمز عبور",'callback_data'=>'5']
-				                ],
-				                [
-				                    ['text'=>"بازگشت",'callback_data'=>'2']
-				                ]
-				            ]
-				        ])
+				        'text'=>"لطفا رمز عبور خود را ارسال کنید",
 				    ]);
         		break;
 	        }
@@ -187,7 +178,7 @@ class jeton extends Controller
 		        'reply_markup'=>json_encode([
 		            'inline_keyboard'=>[
 		                [
-		                    ['text'=>"غذای امروز",'callback_data'=>'1']
+		                    ['text'=>"برنامه غذایی",'callback_data'=>'1']
 		                ],
 		                [
 		                	['text'=>"ژتون من",'callback_data'=>'2']

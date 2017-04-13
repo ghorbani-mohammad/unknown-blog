@@ -8,5 +8,6 @@ class Juserstate extends Model
 {
     //
     protected $table='JUserState';
-    // protected $fillable = ['user_id','fname','lname','username'];
+    protected $fillable = ['user_id','state'];
+    public $timestamps = false;
 }
