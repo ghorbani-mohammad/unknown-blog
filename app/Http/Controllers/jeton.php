@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Juser;
+// use \App\myclass\jdf;
+use App\myclass\jalali;
 
 class jeton extends Controller
 {
-    //
+
 
 	public function control()
 	{
 		ini_set('error_reporting', E_ALL);
 		define('API_KEY','368144050:AAGpp3CY_ZHDaPqdZKPEU3_PSnp9lUn11BQ');
+
+
+		// include(app_path() . '/../myclass/jdf.php');
+		// $date=new \App\myclass\jdf\date;
+
+		$today =jdf::hello();
 
 		function makeHTTPRequest($method,$datas=[])
 		{
@@ -32,29 +40,65 @@ class jeton extends Controller
 
 		$update = json_decode(file_get_contents('php://input'));
 
+
 		$chatId = $update->message->chat->id;
 		$messageText=$update->message->text;
-		$today="1396";
-		makeHTTPRequest('sendMessage',[
-	        'chat_id'=>$chatId,
-	        'text'=>"امروز: ".$today."\nامتحان بعدی شما: ریاضی2\nروز باقیمانده: 4 روز",
-	        'reply_markup'=>json_encode([
-	            'inline_keyboard'=>[
-	                [
-	                    ['text'=>"امتحانات من",'callback_data'=>'2']
-	                ],
-	                [
-	                    ['text'=>"لیست امتحانات",'callback_data'=>'3']
-	                ],
-	                [
-	                	['text'=>"تنظیمات",'callback_data'=>'4']
-	                ],
-	                [
-	                    ['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
-	                ]
-	            ]
-	        ])
-	    ]);
+		$today="111";
+		
+
+
+		$user_id=$update->message->from->id;
+		$fname=$update->message->from->first_name;
+		$lname=$update->message->from->last_name;
+		$username=$update->message->from->username;
+
+
+		if(isset($update->callback_query))
+		{
+
+		}else
+		{
+			if($messageText=="/start")
+			{
+				Juser::firstOrCreate([
+					'user_id' => $user_id,
+					'fname'=>$fname,
+					'lname'=>$lname,
+					'username'=>$username,
+					]);
+			}
+
+			// if($messageText=="/setUsername")
+			// {
+			// 	$juser=	Juser::find($user_id);
+			// 	$juser->jusername=$messageText;
+			// 	$juser->save();
+			// }
+			// if($messageText=="/setPassword")
+			// {
+			// 	$juser=	Juser::find($user_id);
+			// 	$juser->jpassword=$messageText;
+			// 	$juser->save();
+			// }
+
+			makeHTTPRequest('sendMessage',[
+		        'chat_id'=>$chatId,
+		        'text'=>"امروز: ".$today,
+		        'reply_markup'=>json_encode([
+		            'inline_keyboard'=>[
+		                [
+		                    ['text'=>"غذای امروز",'callback_data'=>'2']
+		                ],
+		                [
+		                	['text'=>"تنظیمات",'callback_data'=>'4']
+		                ],
+		                [
+		                    ['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
+		                ]
+		            ]
+		        ])
+		    ]);
+		}
 	}
 
 }

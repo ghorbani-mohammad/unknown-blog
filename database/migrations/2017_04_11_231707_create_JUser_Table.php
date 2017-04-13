@@ -14,7 +14,9 @@ class CreateJUserTable extends Migration
     public function up()
     {
         //
-        Schema::create('Juser', function (Blueprint $table) {
+        Schema::create('Juser', function (Blueprint $table) 
+        {
+            $table->increments('id');
             $table->string('user_id')->index();
             $table->string('fname');
             $table->string('lname');
@@ -22,7 +24,7 @@ class CreateJUserTable extends Migration
             $table->string('jusername')->nullable();
             $table->string('jpassword')->nullable();
             $table->string('jflname')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 
