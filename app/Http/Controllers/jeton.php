@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Juser; 
+use App\Juser;
+use App\JUserState; 
 
 class jeton extends Controller
 {
@@ -41,6 +42,7 @@ class jeton extends Controller
 
 			$item=$update->callback_query->data;
 			$chatId = $update->callback_query->message->chat->id;
+			
 	        $messageId = $update->callback_query->message->message_id;
 	        $callbackQueryId=$update->callback_query->id;
 	        makeHTTPRequest('answerCallbackQuery',['callback_query_id'=>$callbackQueryId]);
@@ -112,17 +114,12 @@ class jeton extends Controller
         		break;
         		case '4':
 		        	\Log::info("switch 4");
-	        		makeHTTPRequest('editMessageText',[
+		        	$user_id = $update->callback_query->from->id;
+		        	JUserState::create('user_id' => $user_id,
+									   'state'=>$'id');
+	        		makeHTTPRequest('sendMessage',[
 				        'chat_id'=>$chatId,
-				        'message_id'=>$messageId,
-				        'text'=>"نام کاربر خود را ارسال کنید",
-				        'reply_markup'=>json_encode([
-				            'inline_keyboard'=>[
-				                [
-				                    ['text'=>"بازگشت",'callback_data'=>'3','message'=>'salam']
-				                ]
-				            ]
-				        ])
+				        'text'=>"لطفا نام کاربر خود را ارسال کنید",
 				    ]);
         		break;
         		case '5':
