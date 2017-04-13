@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Juser;
-// use \App\myclass\jdf;
-use App\myclass\jalali;
+use App\Juser; 
 
 class jeton extends Controller
 {
@@ -15,11 +13,8 @@ class jeton extends Controller
 		ini_set('error_reporting', E_ALL);
 		define('API_KEY','368144050:AAGpp3CY_ZHDaPqdZKPEU3_PSnp9lUn11BQ');
 
-
-		// include(app_path() . '/../myclass/jdf.php');
-		// $date=new \App\myclass\jdf\date;
-
-		$today =jdf::hello();
+		include(app_path() . '/Myclasses/Jalali.php');
+        $today= jdate('l j F'); 
 
 		function makeHTTPRequest($method,$datas=[])
 		{
@@ -40,24 +35,132 @@ class jeton extends Controller
 
 		$update = json_decode(file_get_contents('php://input'));
 
-
-		$chatId = $update->message->chat->id;
-		$messageText=$update->message->text;
-		$today="111";
-		
-
-
-		$user_id=$update->message->from->id;
-		$fname=$update->message->from->first_name;
-		$lname=$update->message->from->last_name;
-		$username=$update->message->from->username;
-
-
 		if(isset($update->callback_query))
 		{
+			\Log::info("call_back: ".$update->callback_query->data);
+
+			$item=$update->callback_query->data;
+			$chatId = $update->callback_query->message->chat->id;
+	        $messageId = $update->callback_query->message->message_id;
+	        $callbackQueryId=$update->callback_query->id;
+	        makeHTTPRequest('answerCallbackQuery',['callback_query_id'=>$callbackQueryId]);
+
+	        switch ($item) {
+	        	case '1':
+	        		\Log::info("switch 1");
+	        		makeHTTPRequest('editMessageText',[
+				        'chat_id'=>$chatId,
+				        'message_id'=>$messageId,
+				        'text'=>"امروز: ".$today,
+				        'reply_markup'=>json_encode([
+				            'inline_keyboard'=>[
+				                [
+				                    ['text'=>"غذای امروز",'callback_data'=>'2']
+				                ],
+				                [
+				                	['text'=>"ژتون من",'callback_data'=>'2']
+				                ],
+				                [
+				                    ['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
+				                ]
+				            ]
+				        ])
+				    ]);
+	        	break;
+	        	
+	        	case '2':
+		        	\Log::info("switch 2");
+	        		makeHTTPRequest('editMessageText',[
+				        'chat_id'=>$chatId,
+				        'message_id'=>$messageId,
+				        'text'=>"اعتبار شما: ".$today,
+				        'reply_markup'=>json_encode([
+				            'inline_keyboard'=>[
+				                [
+				                    ['text'=>"غذای امروز",'callback_data'=>'2']
+				                ],
+				                [
+				                	['text'=>"اطلاعات کارت",'callback_data'=>'3']
+				                ],
+				                [
+				                    ['text'=>"بازگشت",'callback_data'=>'1']
+				                ]
+				            ]
+				        ])
+				    ]);
+        		break;
+        		case '3':
+		        	\Log::info("switch 3");
+	        		makeHTTPRequest('editMessageText',[
+				        'chat_id'=>$chatId,
+				        'message_id'=>$messageId,
+				        'text'=>"اعتبار شما: ".$today,
+				        'reply_markup'=>json_encode([
+				            'inline_keyboard'=>[
+				                [
+				                    ['text'=>"نام کاربری",'callback_data'=>'4']
+				                ],
+				                [
+				                	['text'=>"رمز عبور",'callback_data'=>'5']
+				                ],
+				                [
+				                    ['text'=>"بازگشت",'callback_data'=>'2']
+				                ]
+				            ]
+				        ])
+				    ]);
+        		break;
+        		case '4':
+		        	\Log::info("switch 4");
+	        		makeHTTPRequest('editMessageText',[
+				        'chat_id'=>$chatId,
+				        'message_id'=>$messageId,
+				        'text'=>"نام کاربر خود را ارسال کنید",
+				        'reply_markup'=>json_encode([
+				            'inline_keyboard'=>[
+				                [
+				                    ['text'=>"بازگشت",'callback_data'=>'3','message'=>'salam']
+				                ]
+				            ]
+				        ])
+				    ]);
+        		break;
+        		case '5':
+		        	\Log::info("switch 5");
+	        		makeHTTPRequest('editMessageText',[
+				        'chat_id'=>$chatId,
+				        'message_id'=>$messageId,
+				        'text'=>"اعتبار شما: ".$today,
+				        'reply_markup'=>json_encode([
+				            'inline_keyboard'=>[
+				                [
+				                    ['text'=>"نام کاربری",'callback_data'=>'4']
+				                ],
+				                [
+				                	['text'=>"رمز عبور",'callback_data'=>'5']
+				                ],
+				                [
+				                    ['text'=>"بازگشت",'callback_data'=>'2']
+				                ]
+				            ]
+				        ])
+				    ]);
+        		break;
+	        }
 
 		}else
 		{
+
+			\Log::info("not call_back");
+			$chatId = $update->message->chat->id;
+			$messageText=$update->message->text;
+
+			$user_id=$update->message->from->id;
+			$fname=$update->message->from->first_name;
+			$lname=$update->message->from->last_name;
+			$username=$update->message->from->username;
+
+
 			if($messageText=="/start")
 			{
 				Juser::firstOrCreate([
@@ -87,10 +190,10 @@ class jeton extends Controller
 		        'reply_markup'=>json_encode([
 		            'inline_keyboard'=>[
 		                [
-		                    ['text'=>"غذای امروز",'callback_data'=>'2']
+		                    ['text'=>"غذای امروز",'callback_data'=>'1']
 		                ],
 		                [
-		                	['text'=>"تنظیمات",'callback_data'=>'4']
+		                	['text'=>"ژتون من",'callback_data'=>'2']
 		                ],
 		                [
 		                    ['text'=>"معرفی به دوستان",'switch_inline_query'=>'سلام، این ربات به نظرم مفید بود خواستم بهت معرفیش کنم']
