@@ -80,10 +80,10 @@ class jeton extends Controller
 					'reply_markup'=>json_encode([
 						'inline_keyboard'=>[
 						[
-						['text'=>"موجودی من",'callback_data'=>'2']
+						['text'=>"ورود",'callback_data'=>'10']
 						],
 						[
-						['text'=>"اطلاعات کارت",'callback_data'=>'3']
+						['text'=>"کارت من",'callback_data'=>'3']
 						],
 						[
 						['text'=>"بازگشت",'callback_data'=>'1']
@@ -119,26 +119,60 @@ class jeton extends Controller
 					]);
 				break;
 				case '4':
-				\Log::info("switch 4");
-				$user_id = $update->callback_query->from->id;
+				\Log::info("switch4: getting username");
 				$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'id']);
-		        	// $state->state="id";
-		        	// $state->save();
 				makeHTTPRequest('sendMessage',[
 					'chat_id'=>$chatId,
 					'text'=>"لطفا نام کاربری خود را ارسال کنید",
 					]);
 				break;
 				case '5':
-				\Log::info("switch 5");
-				$user_id = $update->callback_query->from->id;
+				\Log::info("switch5: getting password");
 				$state=JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'pa']);
-		        	// $state->state="pa";
-		        	// $state->save();
 				makeHTTPRequest('sendMessage',[
 					'chat_id'=>$chatId,
 					'text'=>"لطفا رمز عبور خود را ارسال کنید",
 					]);
+				break;
+				case '10':
+				\Log::info("switch10: vorod");
+				$user=Juser::find($user_id);
+				if($user->jusername==NULL||$user->jpassword==NULL)
+				{
+					makeHTTPRequest('sendMessage',[
+					'chat_id'=>$chatId,
+					'text'=>"نام کاربری یا رمز عبور شما تعیین نشده است لطفا به منوی قبل باز گردید و با ورود به  <<کارت من>> آنها را تعیین کنید",
+					'reply_markup'=>json_encode([
+						'inline_keyboard'=>[
+
+							[
+								['text'=>"بازگشت",'callback_data'=>'2']
+							]
+						]
+						])
+					]);
+				}else
+				{
+					makeHTTPRequest('editMessageText',[
+					'chat_id'=>$chatId,
+					'message_id'=>$messageId,
+					'text'=>"اعتبار شما: 5000",
+					'reply_markup'=>json_encode([
+						'inline_keyboard'=>[
+						[
+						['text'=>"رزرو غذا",'callback_data'=>'11']
+						],
+						[
+						['text'=>"لغو غذا",'callback_data'=>'5']
+						],
+						[
+						['text'=>"بازگشت",'callback_data'=>'2']
+						]
+						]
+						])
+					]);
+				}
+				
 				break;
 			}
 
@@ -213,6 +247,7 @@ class jeton extends Controller
 							else
 							{
 								$user=Juser::where('user_id',$user_id)->update(['jusername'=>$messageText]);
+								Juserstate::destroy($user_id);
 								makeHTTPRequest('sendMessage',[
 									'chat_id'=>$chatId,
 									'text'=>"نام کاربری شما ثبت شد",
@@ -247,6 +282,7 @@ class jeton extends Controller
 							else
 							{
 								$user=Juser::where('user_id',$user_id)->update(['jpassword'=>$messageText]);
+								Juserstate::destroy($user_id);
 								makeHTTPRequest('sendMessage',[
 									'chat_id'=>$chatId,
 									'text'=>"رمز عبور شما ثبت شد",

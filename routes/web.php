@@ -93,11 +93,16 @@ Route::post('jeton/bot.php','jeton@control');
 
 
 Route::get('pytest',function(){
+	// $pyPath = 'python';
+	// $appPath=app_path().'/testingPHP.py';
+	// $command="$pyPath $appPath hello goodbye";
+	// exec($command, $out, $status);
+	// return $out;
+
 	$pyPath = 'python';
-	$appPath=app_path().'/testingPHP.py';
-	$command="$pyPath $appPath hello goodbye";
+	$appPath=app_path().'/etebar.py';
+	$command="$pyPath $appPath";
 	exec($command, $out, $status);
-	return $out;
 });
 
 
