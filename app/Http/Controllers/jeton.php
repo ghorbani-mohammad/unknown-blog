@@ -139,6 +139,7 @@ class jeton extends Controller
 				$user=Juser::find($user_id);
 				if($user->jusername==NULL||$user->jpassword==NULL)
 				{
+					\Log::info("switch10: vorod->no id or pass");
 					makeHTTPRequest('sendMessage',[
 					'chat_id'=>$chatId,
 					'text'=>"نام کاربری یا رمز عبور شما تعیین نشده است لطفا به منوی قبل باز گردید و با ورود به  <<کارت من>> آنها را تعیین کنید",
@@ -153,26 +154,40 @@ class jeton extends Controller
 					]);
 				}else
 				{
-					makeHTTPRequest('editMessageText',[
-					'chat_id'=>$chatId,
-					'message_id'=>$messageId,
-					'text'=>"اعتبار شما: 5000",
-					'reply_markup'=>json_encode([
-						'inline_keyboard'=>[
-						[
-						['text'=>"رزرو غذا",'callback_data'=>'11']
-						],
-						[
-						['text'=>"لغو غذا",'callback_data'=>'5']
-						],
-						[
-						['text'=>"بازگشت",'callback_data'=>'2']
-						]
-						]
-						])
-					]);
+					\Log::info("switch10: vorod->Trying to get capthca and other fields");
+					$pyPath = 'python3';
+					$appPath=app_path().'/loginStep1.py';
+					$config='2>&1'; //Redirect stderr to stdout, so you can see errors
+					$command="$pyPath $appPath $config $user_id";
+					exec($command, $out, $status);
+					if($out[0]=="Success")
+					{
+						\Log::info("switch10: vorod->Getting captcha and other fields");
+						makeHTTPRequest('sendPhoto',[
+							'chat_id'=>$chatId,
+							'photo'=>$out[1],
+							'caption'=>'کد امنیتی بالا را وارد کنید'
+						]);
+						JUserState::updateOrCreate(['user_id' => $user_id],['state'=>'lo']);
+
+					}else
+					{
+						\Log::info("switch10: vorod->Problem to getting captcha and other fields");
+						makeHTTPRequest('editMessageText',[
+						'chat_id'=>$chatId,
+						'message_id'=>$messageId,
+						'text'=>"متاسفانه مشکلی پیش آمده است لطفا مجددا تلاش کنید",
+						'reply_markup'=>json_encode([
+							'inline_keyboard'=>[
+								[
+									['text'=>"بازگشت",'callback_data'=>'2']
+								]
+							]
+							])
+						]);
+					}
+					
 				}
-				
 				break;
 			}
 
@@ -295,6 +310,50 @@ class jeton extends Controller
 										])
 									]);
 							}
+						}
+						elseif ($state=='lo') 
+						{
+							if(strlen($messageText)==4)
+							{
+								\Log::info("Getting Captcha Code from user");
+								$captcha=$messageText;
+								$pyPath = 'python3';
+								$appPath=app_path().'/loginStep2.py';
+								$config='2>&1'; //Redirect stderr to stdout, so you can see errors
+								$command="$pyPath $appPath $config $user_id $captcha";
+								exec($command, $out, $status);
+								\Log::info($out);
+								if($out[0]=="Success")
+								{
+									\Log::info("Successful Login To Jeton");
+									makeHTTPRequest('sendMessage',[
+										'chat_id'=>$chatId,
+										'text'=>iconv('ASCII', 'UTF-8//IGNORE', $out[1])."خوش آمدید\nاعتبار شما: $out[2]",
+										'reply_markup'=>json_encode([
+										'inline_keyboard'=>[
+												[
+													['text'=>"بازگشت",'callback_data'=>'2']
+												],
+											]
+										])
+									]);
+								}else
+								{
+									\Log::info("Failed Login To Jeton");
+									makeHTTPRequest('sendMessage',[
+										'chat_id'=>$chatId,
+										'text'=>"$out[1]",
+									]);
+								}
+							}else
+							{
+								\Log::info("Captcha Code is not 4 character");
+								makeHTTPRequest('sendMessage',[
+									'chat_id'=>$chatId,
+									'text'=>"کد امنیتی باید 4 رقم باشد",
+								]);
+							}
+
 						}
 					}else
 					{

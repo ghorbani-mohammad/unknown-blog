@@ -93,16 +93,13 @@ Route::post('jeton/bot.php','jeton@control');
 
 
 Route::get('pytest',function(){
-	// $pyPath = 'python';
-	// $appPath=app_path().'/testingPHP.py';
-	// $command="$pyPath $appPath hello goodbye";
-	// exec($command, $out, $status);
-	// return $out;
-
-	$pyPath = 'python';
-	$appPath=app_path().'/etebar.py';
-	$command="$pyPath $appPath";
+	$user_id='110374168';
+	$pyPath = 'python3';
+	$appPath=app_path().'/loginStep2.py';
+	$config='2>&1'; //Redirect stderr to stdout, so you can see errors
+	$command="$pyPath $appPath $config $user_id";
 	exec($command, $out, $status);
+	return $out;
 });
 
 
