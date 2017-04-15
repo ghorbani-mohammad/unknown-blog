@@ -26,7 +26,7 @@ Route::get('fupdate',function(){
 
 	App\Food::truncate();
 
-	$contents = file_get_contents('http://jeton.araku.ac.ir/Ghaza.aspx?date=960119');
+	$contents = file_get_contents('http://jeton.araku.ac.ir/Ghaza.aspx?date=960126');
 
 	$DOM = new DOMDocument;
 	$DOM->loadHTML('<?xml encoding="UTF-8">' .$contents);
@@ -51,7 +51,7 @@ Route::get('fupdate',function(){
 	}
 
 
-	$contents = file_get_contents('http://jeton.araku.ac.ir/Ghaza.aspx?date=960126');
+	$contents = file_get_contents('http://jeton.araku.ac.ir/Ghaza.aspx?date=960202');
 
 	$DOM = new DOMDocument;
 	$DOM->loadHTML('<?xml encoding="UTF-8">' .$contents);

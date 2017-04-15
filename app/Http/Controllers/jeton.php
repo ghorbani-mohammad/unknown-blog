@@ -76,7 +76,7 @@ class jeton extends Controller
 				makeHTTPRequest('editMessageText',[
 					'chat_id'=>$chatId,
 					'message_id'=>$messageId,
-					'text'=>"اعتبار شما: ".$today,
+					'text'=>"امروز: ".$today,
 					'reply_markup'=>json_encode([
 						'inline_keyboard'=>[
 						[
@@ -323,14 +323,37 @@ class jeton extends Controller
 								$command="$pyPath $appPath $config $user_id $captcha";
 								exec($command, $out, $status);
 								\Log::info($out);
+								$out=json_decode($out[0],true);
+								\Log::info($out);
+								$out=array_values($out);
+								\Log::info($out);
+								// \Log::info(array_values($out));
+								// \Log::info($out[0]);
+								// \Log::info($out[0]);
+								// $out=json_encode($out[0]);
+								// $out=json_decode($out[0]);
+								// $out=$out[0];
+								// \Log::info($out[0]);
+								// $out=array_values($out);
+								// \Log::info($out);
+								// \Log::info(var_dump($out));
+								// \Log::info(print_r($out));
+								// \Log::info(var_dump($out));
+								// if($out[0]->status=="Success")
 								if($out[0]=="Success")
 								{
 									\Log::info("Successful Login To Jeton");
 									makeHTTPRequest('sendMessage',[
 										'chat_id'=>$chatId,
-										'text'=>iconv('ASCII', 'UTF-8//IGNORE', $out[1])."خوش آمدید\nاعتبار شما: $out[2]",
+										'text'=>$out[1]." عزیز خوش آمدید\nاعتبار شما: ".$out[2],
 										'reply_markup'=>json_encode([
 										'inline_keyboard'=>[
+												[
+													['text'=>"رزرو غذا",'callback_data'=>'11']
+												],
+												[
+													['text'=>"لغو غذا",'callback_data'=>'12']
+												],
 												[
 													['text'=>"بازگشت",'callback_data'=>'2']
 												],
@@ -342,7 +365,7 @@ class jeton extends Controller
 									\Log::info("Failed Login To Jeton");
 									makeHTTPRequest('sendMessage',[
 										'chat_id'=>$chatId,
-										'text'=>"$out[1]",
+										'text'=>"ورود با مشکلی مواجه شد. لطفا مجددا تلاش کنید",
 									]);
 								}
 							}else
