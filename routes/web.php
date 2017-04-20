@@ -106,3 +106,8 @@ Route::get('pytest',function(){
 
 
 
+
+
+Route::get('quote',function(){
+	return view('quote');
+});
