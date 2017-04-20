@@ -8,6 +8,7 @@ from time import gmtime, strftime
 
 time=strftime("%Y-%m-%d %H:%M:%S", gmtime())
 user_id=sys.argv[1]
+
 # print(time)
 
 url ="http://jeton.araku.ac.ir"

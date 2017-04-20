@@ -16,7 +16,8 @@ url ="http://jeton.araku.ac.ir"
 
 user_id=sys.argv[1]
 captcha=sys.argv[2]
-
+jusername=sys.argv[3]
+jpassword=sys.argv[4]
 
 
 db = pymysql.connect(host="localhost",user="mghinfo_root",passwd="ER(a<sTQ6LbA(M-M",db="mghinfo_blog",charset="utf8")
@@ -39,8 +40,11 @@ s=requests.session()
 r=s.post(url+"/login.aspx",data={'__LASTFOCUS':'' ,'__EVENTTARGET':'','__EVENTARGUMENT':'',
                                         '__VIEWSTATE':VIEWSTATE,'__VIEWSTATEGENERATOR':VIEWSTATEGENERATOR,
                                         '__VIEWSTATEENCRYPTED':'','__EVENTVALIDATION':EVENTVALIDATION,
-                                        'txtusername':11521,'txtpassword':9213231259,
+                                        'txtusername':jusername,'txtpassword':jpassword,
                                         'CaptchaControl1':captcha,'btnlogin':'ورود'})
+
+
+
 
 
 html_doc=r.text

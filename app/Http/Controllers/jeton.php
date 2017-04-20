@@ -316,36 +316,22 @@ class jeton extends Controller
 							if(strlen($messageText)==4)
 							{
 								\Log::info("Getting Captcha Code from user");
+								$user=Juser::find($user_id);
 								$captcha=$messageText;
 								$pyPath = 'python3';
 								$appPath=app_path().'/loginStep2.py';
 								$config='2>&1'; //Redirect stderr to stdout, so you can see errors
-								$command="$pyPath $appPath $config $user_id $captcha";
+								$command="$pyPath $appPath $config $user_id $captcha $user->jusername $user->jpassword";
 								exec($command, $out, $status);
-								\Log::info($out);
-								$out=json_decode($out[0],true);
-								\Log::info($out);
-								$out=array_values($out);
-								\Log::info($out);
-								// \Log::info(array_values($out));
-								// \Log::info($out[0]);
-								// \Log::info($out[0]);
-								// $out=json_encode($out[0]);
-								// $out=json_decode($out[0]);
-								// $out=$out[0];
-								// \Log::info($out[0]);
-								// $out=array_values($out);
 								// \Log::info($out);
-								// \Log::info(var_dump($out));
-								// \Log::info(print_r($out));
-								// \Log::info(var_dump($out));
-								// if($out[0]->status=="Success")
+								$out=json_decode($out[0],true);
+								$out=array_values($out);
 								if($out[0]=="Success")
 								{
 									\Log::info("Successful Login To Jeton");
 									makeHTTPRequest('sendMessage',[
 										'chat_id'=>$chatId,
-										'text'=>$out[1]." عزیز خوش آمدید\nاعتبار شما: ".$out[2],
+										'text'=>$out[1]." عزیز خوش آمدید\nاعتبار شما: ".$out[2]." ریال",
 										'reply_markup'=>json_encode([
 										'inline_keyboard'=>[
 												[
@@ -365,7 +351,14 @@ class jeton extends Controller
 									\Log::info("Failed Login To Jeton");
 									makeHTTPRequest('sendMessage',[
 										'chat_id'=>$chatId,
-										'text'=>"ورود با مشکلی مواجه شد. لطفا مجددا تلاش کنید",
+										'text'=>"ورود با مشکل مواجه شد. لطفا مجددا تلاش کنید در صورت تکرار نام کاربری یا رمز عبور خود را بررسی کنید",
+										'reply_markup'=>json_encode([
+											'inline_keyboard'=>[
+												[
+													['text'=>"بازگشت",'callback_data'=>'2']
+												]
+											]
+										])
 									]);
 								}
 							}else
